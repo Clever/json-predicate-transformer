@@ -1,0 +1,46 @@
+{
+  "name": "json-predicate-transformer",
+  "version": "0.0.1",
+  "description": "A simple utility for modifying JSON objects using a predicate-transformer paradigm",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc --outDir dist lib/index.ts",
+    "test": "jest"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "json",
+      "ts",
+      "tsx"
+    ],
+    "testRegex": "/__tests__/.+\\.ts$",
+    "transform": {
+      "^.+\\.ts$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    }
+  },
+  "author": "bibek.ghimire@clever.com",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/jest": "^18.1.1",
+    "@types/node": "^10.12.0",
+    "@typescript-eslint/eslint-plugin": "^2.0.0",
+    "@typescript-eslint/parser": "^2.0.0",
+    "babel-eslint": "^7.1.1",
+    "eslint": "^6.2.2",
+    "eslint-config-prettier": "^6.1.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-react": "^3.16.1",
+    "jest": "^24.9.0",
+    "prettier": "^1.18.2",
+    "ts-jest": "^24.0.2",
+    "tslint": "^5.19.0",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {},
+  "prettier": {
+    "semi": true,
+    "trailingComma": "all"
+  }
+}
