@@ -1,8 +1,6 @@
-import JSONTransformer from "../lib";
+import { predicateTransform, pathOmitter } from "../lib";
 
-test("correctly processes value handlers", () => {
-  const jsont = new JSONTransformer();
-
+it("correctly processes value handlers", () => {
   const preTransformedObject = {
     foo: {
       bar: 123,
@@ -19,7 +17,7 @@ test("correctly processes value handlers", () => {
     baz: "[string]",
   };
 
-  const result = jsont.transform(preTransformedObject, {
+  const result = predicateTransform(preTransformedObject, {
     valueHandlers: [
       {
         predicate: (_, value) => value === 123,
@@ -38,9 +36,7 @@ test("correctly processes value handlers", () => {
   expect(expectedObject).toMatchObject(result);
 });
 
-test("correctly handles key handlers", () => {
-  const jsont = new JSONTransformer();
-
+it("correctly handles key handlers", () => {
   const preTransformedObject = {
     foo: {
       bar: 123,
@@ -63,7 +59,7 @@ test("correctly handles key handlers", () => {
     },
   };
 
-  const result = jsont.transform(preTransformedObject, {
+  const result = predicateTransform(preTransformedObject, {
     keyHandlers: [
       {
         predicate: path => path === "foo.bar",
@@ -73,6 +69,42 @@ test("correctly handles key handlers", () => {
         predicate: path => path === "baz",
         transformer: path => `${path}New`,
       },
+    ],
+  });
+
+  expect(result).toMatchObject(expectedObject);
+  expect(expectedObject).toMatchObject(result);
+});
+
+it("correctly omits paths using pathOmitter", () => {
+  const preTransformedObject = {
+    foo: {
+      bar: 123,
+    },
+    baz: {
+      abc: {
+        def: 4,
+      },
+    },
+  };
+
+  const expectedObject = {
+    foo: {
+      bar: 123,
+    },
+    baz: {
+      abc: {
+        def: 0,
+      },
+    },
+  };
+
+  const result = predicateTransform(preTransformedObject, {
+    valueHandlers: [
+      pathOmitter(["foo.bar"], {
+        predicate: (_path, value) => typeof value === "number",
+        transformer: () => 0,
+      }),
     ],
   });
 
