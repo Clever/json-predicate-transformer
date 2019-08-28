@@ -13,6 +13,7 @@ export interface HandlerConfig {
 interface RecursionMetaData {
   pathChain: string[];
   currentPathKey: string;
+  processingArrayItems: boolean;
 }
 
 const DEFAULT_TRANSFORMER_OPTIONS = {
@@ -23,6 +24,7 @@ const DEFAULT_TRANSFORMER_OPTIONS = {
 const DEFAULT_RECURSION_META = {
   pathChain: [],
   currentPathKey: "",
+  processingArrayItems: false,
 };
 
 // NOTE: This implementation won't work if the object contains any non-JSON-compliant
@@ -36,35 +38,45 @@ const transformAny = (
   options: TransformerOptions,
   recursionMeta: RecursionMetaData,
 ) => {
-  const { pathChain } = recursionMeta;
+  let blobInProgress = blob;
+  const { pathChain, processingArrayItems } = recursionMeta;
   const key = pathChain.join(".");
 
   // Try and use the consumer-defined predicate/transformers if possible
   for (const { predicate, transformer } of options.valueHandlers) {
-    if (predicate(key, blob)) {
-      return transformer(key, blob);
+    if (!processingArrayItems && predicate(key, blobInProgress)) {
+      blobInProgress = transformer(key, blobInProgress);
     }
   }
 
+  const nextRecMeta = deepClone(recursionMeta);
+  nextRecMeta.processingArrayItems = false;
+
   // If no consumer-defined predicate was met, check if we're dealing with a nested
   // data structure (array or object) and recurse.
-  if (Array.isArray(blob)) {
-    return transformArray(blob, options, recursionMeta);
-  } else if (typeof blob === "object" && blob != null) {
-    return transformObject(blob, options, recursionMeta);
-  } else if (blob === null) {
+  if (Array.isArray(blobInProgress)) {
+    return transformArray(blobInProgress, options, nextRecMeta);
+  } else if (typeof blobInProgress === "object" && blobInProgress != null) {
+    return transformObject(blobInProgress, options, nextRecMeta);
+  } else if (blobInProgress === null) {
     return null;
   }
 
   // Otherwise, we reached a leaf item, just return it without a transformation
-  return blob;
+  return blobInProgress;
 };
 
 const transformArray = (
   a: any[],
   options: TransformerOptions,
   recursionMeta: RecursionMetaData = DEFAULT_RECURSION_META,
-) => a.map(aItem => transformAny(aItem, options, recursionMeta));
+) =>
+  a.map(aItem =>
+    transformAny(aItem, options, {
+      ...recursionMeta,
+      processingArrayItems: true,
+    }),
+  );
 
 const transformObject = (
   o: object,

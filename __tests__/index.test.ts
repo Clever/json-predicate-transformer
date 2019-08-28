@@ -75,3 +75,51 @@ it("correctly handles key handlers", () => {
   expect(result).toMatchObject(expectedObject);
   expect(expectedObject).toMatchObject(result);
 });
+
+it("handles dotpaths that are nested within arrays", () => {
+  const preTransformedObject = {
+    foo: [{ bar: 123 }],
+  };
+
+  const expectedObject = {
+    foo: [{ bar: 246 }],
+  };
+
+  const result = predicateTransform(preTransformedObject, {
+    valueHandlers: [
+      {
+        predicate: path => path === "foo.bar",
+        transformer: (_path, value) => value * 2,
+      },
+    ],
+  });
+
+  expect(result).toMatchObject(expectedObject);
+  expect(expectedObject).toMatchObject(result);
+});
+
+it("handles updates to both an object and props within that object", () => {
+  const preTransformedObject = {
+    foo: [{ bar: 123 }, { xyz: 400 }],
+  };
+
+  const expectedObject = {
+    foo: [{ bar: 246 }],
+  };
+
+  const result = predicateTransform(preTransformedObject, {
+    valueHandlers: [
+      {
+        predicate: path => path === "foo.bar",
+        transformer: (_path, value) => value * 2,
+      },
+      {
+        predicate: path => path === "foo",
+        transformer: (_path, value) => value.slice(0, 1),
+      },
+    ],
+  });
+
+  expect(result).toMatchObject(expectedObject);
+  expect(expectedObject).toMatchObject(result);
+});
