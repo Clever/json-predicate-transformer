@@ -5,7 +5,7 @@ A simple utility for modifying JSON objects using a predicate-transformer paradi
 ## Usage
 
 ```js
-  import { predicateTransform, pathOmitter } from "json-predicate-transformer"
+  import { predicateTransform } from "json-predicate-transformer"
 
   const preTransformedObject = {
     foo: {
@@ -24,11 +24,10 @@ A simple utility for modifying JSON objects using a predicate-transformer paradi
       }
     ],
     valueHandlers: [
-      // Using the pathOmitter makes this handler avoid transforming foo.xyz
-      pathOmitter(["foo.xyz"], {
+      {
         predicate: (_, value) => value > 100,
         transformer: (_, value) => value * 2,
-      }),
+      },
       {
         predicate: (_, value) => typeof value === "string",
         transformer: () => "[string]",
@@ -53,9 +52,6 @@ A simple utility for modifying JSON objects using a predicate-transformer paradi
 
 ### `predicateTransform(blob: object | any[], options: TransformerOptions): object | any[]`
 The main transformer function.
-
-### `pathOmitter(pathsToOmit: string[], nestedHandlerConfig: HandlerConfig[])`
-A utility function for modifying a handler config to avoid transformations for certain paths. See the example usage above for how to use it.
 
 ### Important Types
 ```js

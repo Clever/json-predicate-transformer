@@ -31,11 +31,6 @@ const DEFAULT_RECURSION_META = {
 // like lodash.deepClone
 const deepClone = (obj: object) => JSON.parse(JSON.stringify(obj));
 
-const doesPropKeyMatch = (testKey: string, baseKey: string) => {
-  const cleanTestKey = testKey.replace(/\[objectID:.*\]/g, "[objectID]");
-  return cleanTestKey === baseKey;
-};
-
 const transformAny = (
   blob: any,
   options: TransformerOptions,
@@ -114,19 +109,3 @@ export function predicateTransform<T extends object | any[]>(
 
   return transformAny(blob, preparedOptions, DEFAULT_RECURSION_META);
 }
-
-// HandlerConfig creator that adds a layer to the predicate that prevents the handler
-// from transforming certain paths
-// E.g. pathOmitter(['foo.bar'], numberNoiseGenerator) will prevent the 123 in { foo: { bar: 123 }}
-// from getting transformed
-export const pathOmitter = (
-  omitPaths: string[],
-  nestedHandlerConfig: HandlerConfig,
-): HandlerConfig => ({
-  predicate: (path, value) =>
-    // Only transform if this path isn't marked for omission
-    omitPaths.find(pathToOmit => doesPropKeyMatch(path, pathToOmit)) == null &&
-    // and the predicate returns true
-    nestedHandlerConfig.predicate(path, value),
-  transformer: nestedHandlerConfig.transformer,
-});

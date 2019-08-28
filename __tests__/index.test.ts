@@ -1,4 +1,4 @@
-import { predicateTransform, pathOmitter } from "../lib";
+import { predicateTransform } from "../lib";
 
 it("correctly processes value handlers", () => {
   const preTransformedObject = {
@@ -69,42 +69,6 @@ it("correctly handles key handlers", () => {
         predicate: path => path === "baz",
         transformer: path => `${path}New`,
       },
-    ],
-  });
-
-  expect(result).toMatchObject(expectedObject);
-  expect(expectedObject).toMatchObject(result);
-});
-
-it("correctly omits paths using pathOmitter", () => {
-  const preTransformedObject = {
-    foo: {
-      bar: 123,
-    },
-    baz: {
-      abc: {
-        def: 4,
-      },
-    },
-  };
-
-  const expectedObject = {
-    foo: {
-      bar: 123,
-    },
-    baz: {
-      abc: {
-        def: 0,
-      },
-    },
-  };
-
-  const result = predicateTransform(preTransformedObject, {
-    valueHandlers: [
-      pathOmitter(["foo.bar"], {
-        predicate: (_path, value) => typeof value === "number",
-        transformer: () => 0,
-      }),
     ],
   });
 
