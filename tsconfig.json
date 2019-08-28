@@ -5,7 +5,8 @@
     "noImplicitAny": false,
     "jsx": "react",
     "lib": ["es2017", "dom"],
-    "typeRoots": ["node_modules/@types", "./types"]
+    "typeRoots": ["node_modules/@types", "./types"],
+    "declaration": true
   },
   "exclude": ["node_modules"]
 }

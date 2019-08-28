@@ -1,10 +1,11 @@
 {
   "name": "json-predicate-transformer",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A simple utility for modifying JSON objects using a predicate-transformer paradigm",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc --outDir dist lib/index.ts",
+    "build": "tsc --outDir dist lib/index.ts -d",
     "test": "jest",
     "test-debug": "node --inspect-brk=9223 node_modules/.bin/jest --runInBand"
   },
